@@ -1,1 +1,1 @@
-Common algorithms implemented using Java to understand them better.
+Java implementation of some common algorithms and data structures.
