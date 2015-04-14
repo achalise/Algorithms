@@ -6,14 +6,37 @@ import algs4.Picture;
 
 public class SeamCarver {
 	private Picture picture;
+	
+	double[][] energyMatrix;
 
 	private static final int BORDER_PIXEL_ENERGY = 195075;
     
 	public SeamCarver(Picture picture) { // create a seam carver object based on
 											// the given picture
 		this.picture = picture;
+		energyMatrix = new double[picture.width()][picture.height()];
+		populateEnergy();
 	}
 
+	private void populateEnergy() {
+		for (int w = 0; w < width(); w++) {
+			for (int h = 0; h < height(); h++) {
+				energyMatrix[w][h] = energy(w,  h);
+			}
+		}
+	
+	}
+
+	public void printEnergy() {
+        for (int j = 0; j < height(); j++)
+        {
+            for (int i = 0; i < width(); i++)
+                System.out.printf("%9.0f ", energyMatrix[i][j]);
+
+            System.out.println();
+        }
+	}
+	
 	public Picture picture() { // current picture
 		return this.picture;
 	}
@@ -27,6 +50,12 @@ public class SeamCarver {
 	}
 
 	public double energy(int x, int y) { // energy of pixel at column x and row y
+		if (x == 0 || x == (width() - 1)) {
+			return BORDER_PIXEL_ENERGY;
+		} else if (y == 0 || y == height() - 1) {
+			return BORDER_PIXEL_ENERGY;
+		}
+		
 		int deltaX = deltaX(x,y);
 		int deltaY = deltaY(x,y); 
 		int energy = deltaX + deltaY;
@@ -57,9 +86,7 @@ public class SeamCarver {
 		String imageFileName = args[0];
 		Picture picture = new Picture(imageFileName);
 		SeamCarver seamCarver = new SeamCarver(picture);
-		Color color = seamCarver.picture().get(4, 4);
-		//color.get
-		System.out.println(color);
+		seamCarver.printEnergy();
 	}
 
 	public int[] findHorizontalSeam() {
@@ -67,6 +94,7 @@ public class SeamCarver {
 	}
 
 	public int[] findVerticalSeam() {
+		
 		return null;
 	}
 
