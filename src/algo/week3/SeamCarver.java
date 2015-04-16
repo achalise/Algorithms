@@ -7,20 +7,20 @@ import algs4.Picture;
 
 public class SeamCarver {
 	private Color[][] image;
-	private double[][] energyMatrix;
-	
+	private double[][] energyMatrix;	
+	private boolean transposed = false;
 
 	private static final int BORDER_PIXEL_ENERGY = 195075;
     
 	public SeamCarver(Picture picture) { // create a seam carver object based on
-											// the given picture
+										 // the given picture
 		energyMatrix = new double[picture.height()][picture.width()];
 		image = new Color[picture.height()][picture.width()];
-		populateArrayOfColorsForPicture(picture);
+		populateImage(picture);
 		populateEnergy();
 	}
 
-	private void populateArrayOfColorsForPicture(Picture picture) {
+	private void populateImage(Picture picture) {
 		for (int h = 0; h < height(); h++) {
 			for (int w = 0; w < width(); w++) {
 				image[h][w] = picture.get(w, h);
@@ -79,8 +79,8 @@ public class SeamCarver {
 	}
 
 	private int deltaX(int x, int y) {
-		Color color2 = image[y][x + 1]; //picture.get(x + 1,y);
-		Color color1 = image[y][x - 1];//picture.get(x - 1,y);
+		Color color2 = image[y][x + 1];
+		Color color1 = image[y][x - 1];
 		int delRX = color2.getRed() - color1.getRed();
 		int delGX = color2.getGreen() - color1.getGreen();
 		int delBX = color2.getBlue() - color1.getBlue();
@@ -89,8 +89,8 @@ public class SeamCarver {
 	}
 
 	private int deltaY(int x, int y) {
-		Color color2 = image[y+1][x]; //picture.get(x, y + 1);
-		Color color1 = image[y-1][x]; //picture.get(x, y - 1);
+		Color color2 = image[y+1][x];
+		Color color1 = image[y-1][x];
 		int delRY = color2.getRed() - color1.getRed();
 		int delGY = color2.getGreen() - color1.getGreen();
 		int delBY = color2.getBlue() - color1.getBlue();
@@ -107,18 +107,22 @@ public class SeamCarver {
 	}
 
 	public int[] findHorizontalSeam() {
-		energyMatrix = transpose(energyMatrix);
-		image = transpose(image);
+		transpose();
 		int[] seam = findVerticalSeam();
-		energyMatrix = transpose(energyMatrix);
-		image = transpose(image);
+		transpose();
 		return seam;
 		
+	}
+
+	private void transpose() {
+		energyMatrix = transpose(energyMatrix);
+		image = transpose(image);
 	}
 
 	public int[] findVerticalSeam() {
 		double[] distTo = new double[height()];
 		int[] pathTo = new int[height()];
+
 		int startingVertex = 0;
 		
 		//Initialise initial values before traversal
@@ -139,6 +143,11 @@ public class SeamCarver {
 		
 		//Now traverse from the source vertex to the bottom row
 		//accumulating shortest path
+		relaxEdges(distTo, pathTo);			
+		return pathTo;
+	}
+
+	private void relaxEdges(double[] distTo, int[] pathTo) {
 		int col;
 		for (int row = 1; row < height(); row++) {
 			col = pathTo[row - 1];
@@ -158,13 +167,13 @@ public class SeamCarver {
 					pathTo[row] = col + 1;
 				}				
 			}
-		}			
-		return pathTo;
+		}
 	}
 
 	public void removeHorizontalSeam(int[] horizontalSeam) {
-		// TODO Auto-generated method stub
-		
+		transpose();
+		removeVerticalSeam(horizontalSeam);
+		transpose();
 	}
 
 	public void removeVerticalSeam(int[] verticalSeam) {
