@@ -119,11 +119,11 @@ public class SeamCarver {
 	public int[] findVerticalSeam() {
 		double[] distTo = new double[height()];
 		int[] pathTo = new int[height()];
-		int startingVertex = new Random().nextInt(width() - 1);
+		int startingVertex = 0;
 		
 		//Initialise initial values before traversal
 		distTo[0] = 0;
-		pathTo[0] = startingVertex;
+		
 		for (int row = 1; row < height(); row++) {
 			distTo[row] = Double.MAX_VALUE;
 		}
@@ -134,6 +134,8 @@ public class SeamCarver {
 				minEnergy = energyMatrix[1][col];
 			}
 		}
+		
+		pathTo[0] = startingVertex;
 		
 		//Now traverse from the source vertex to the bottom row
 		//accumulating shortest path
