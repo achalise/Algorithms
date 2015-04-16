@@ -107,7 +107,13 @@ public class SeamCarver {
 	}
 
 	public int[] findHorizontalSeam() {
-		return null;
+		energyMatrix = transpose(energyMatrix);
+		image = transpose(image);
+		int[] seam = findVerticalSeam();
+		energyMatrix = transpose(energyMatrix);
+		image = transpose(image);
+		return seam;
+		
 	}
 
 	public int[] findVerticalSeam() {
@@ -182,8 +188,21 @@ public class SeamCarver {
 	
 	private Color[][] transpose(Color[][] input) {
 		Color[][] transposed = new Color[input[0].length][input.length];
-		//for(int col = 0; col < )
+		for(int col = 0; col < width(); col++) {
+			for(int row = 0; row < height(); row++) {
+				transposed[col][row] = input[row][col];
+			}
+		}
 		return transposed;
 	}
 
+	private double[][] transpose(double[][] input) {
+		double[][] transposed = new double[input[0].length][input.length];
+		for(int col = 0; col < width(); col++) {
+			for(int row = 0; row < height(); row++) {
+				transposed[col][row] = input[row][col];
+			}
+		}
+		return transposed;
+	}
 }
