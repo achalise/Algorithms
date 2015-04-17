@@ -1,14 +1,12 @@
 package algo.week3;
 
 import java.awt.Color;
-import java.util.Random;
 
 import algs4.Picture;
 
 public class SeamCarver {
 	private Color[][] image;
 	private double[][] energyMatrix;	
-	private boolean transposed = false;
 
 	private static final int BORDER_PIXEL_ENERGY = 195075;
     
@@ -36,16 +34,6 @@ public class SeamCarver {
 		}
 	
 	}
-
-	public void printEnergy() {
-        for (int j = 0; j < height(); j++)
-        {
-            for (int i = 0; i < width(); i++)
-                System.out.printf("%9.0f ", energyMatrix[j][i]);
-
-            System.out.println();
-        }
-	}
 	
 	public Picture picture() { // current picture
 		Picture picture = new Picture(width(), height());
@@ -66,6 +54,13 @@ public class SeamCarver {
 	}
 
 	public double energy(int x, int y) { // energy of pixel at column x and row y
+		if (x < 0 || x > width() - 1) {
+			throw new IllegalArgumentException("Invalid column value " + x);
+		}
+		if (y < 0 || y > height() - 1) {
+			throw new IllegalArgumentException("Invalid row value " + y);
+		}
+		
 		if (x == 0 || x == (width() - 1)) {
 			return BORDER_PIXEL_ENERGY;
 		} else if (y == 0 || y == height() - 1) {
@@ -97,14 +92,6 @@ public class SeamCarver {
 		int delY = delRY * delRY + delGY * delGY + delBY * delBY; 
 		return delY;
 	}
-	
-	public static void main(String[] args) {
-		String imageFileName = args[0];
-		Picture picture = new Picture(imageFileName);
-		SeamCarver seamCarver = new SeamCarver(picture);
-		seamCarver.printEnergy();
-		picture.show();
-	}
 
 	public int[] findHorizontalSeam() {
 		transpose();
@@ -131,6 +118,7 @@ public class SeamCarver {
 		for (int row = 1; row < height(); row++) {
 			distTo[row] = Double.MAX_VALUE;
 		}
+
 		double minEnergy = Double.MAX_VALUE;
 		for (int col = 1; col < width(); col++) {
 			if (energyMatrix[1][col] < minEnergy) {
@@ -179,7 +167,7 @@ public class SeamCarver {
 	public void removeVerticalSeam(int[] verticalSeam) {
 		for (int row = 0; row < height(); row++) {
 			int col = verticalSeam[row];
-			for (; col < width() - 2; col++) {
+			for (; col < width() - 1; col++) {
 				image[row][col] = image[row][col + 1];
 			}
 		}
@@ -187,9 +175,9 @@ public class SeamCarver {
 	}
 
 	private void resizeArray() {
-		double[][] energiesNewArray = new double[energyMatrix.length - 1][energyMatrix[0].length - 1];
-		Color[][]  newImage = new Color[energyMatrix.length - 1][energyMatrix[0].length - 1];
-		for (int row = 0; row < height() - 1; row++) {
+		double[][] energiesNewArray = new double[energyMatrix.length][energyMatrix[0].length - 1];
+		Color[][]  newImage = new Color[energyMatrix.length][energyMatrix[0].length - 1];
+		for (int row = 0; row < height(); row++) {
 			 System.arraycopy(image[row], 0, newImage[row], 0, width() - 1);
 		}
 		energyMatrix = energiesNewArray;
