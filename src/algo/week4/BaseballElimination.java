@@ -1,16 +1,43 @@
 package algo.week4;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import algs4.In;
+
 public class BaseballElimination {
 	
-	private String[] teams;
-	private int[][] statistics;
+	private List<String> teams;
+	private int[] wins;
+	private int[] losses;
+	private int[] remaining;
+	private int[][] remainingBetweenTesms;
+	
 
 	public BaseballElimination(String fileName) {
-		// construct the league table from the file provided.
+		In in = new In(fileName);
+		int noOfTeams = in.readInt();
+		teams = new ArrayList<>();
+		wins = new int[noOfTeams];
+		losses = new int[noOfTeams];
+		remaining = new int[noOfTeams];
+		remainingBetweenTesms = new int[noOfTeams][noOfTeams];
+		
+		for (int i = 0; i < noOfTeams; i++) {
+			String team = in.readString();
+			teams.add(team);
+			wins[i] = in.readInt();
+			losses[i] = in.readInt();
+			remaining[i] = in.readInt();
+			for (int j = 0; j < noOfTeams; j++) {
+				remainingBetweenTesms[i][j] = in.readInt();				
+			}			
+		}
+		System.out.println(this.numberOfTeams());
 	}
 
 	public int numberOfTeams() {
-		return 0;
+		return teams.size();
 	}
 
 	public Iterable<String> teams() {
@@ -45,6 +72,12 @@ public class BaseballElimination {
 	public Iterable<String> certificateOfElimination(String team) {
 		// subset R of teams that eliminates given team; null if not eliminated
 		return null;
+	}
+	
+	public static void main(String[] args) {
+		String fileName = args[0];
+		BaseballElimination elimination = new BaseballElimination(fileName);
+		elimination.numberOfTeams();
 	}
 
 }
