@@ -3,6 +3,7 @@ package algo.week4;
 import java.util.ArrayList;
 import java.util.List;
 
+import algs4.FlowNetwork;
 import algs4.In;
 
 public class BaseballElimination {
@@ -17,7 +18,7 @@ public class BaseballElimination {
 	public BaseballElimination(String fileName) {
 		In in = new In(fileName);
 		int noOfTeams = in.readInt();
-		teams = new ArrayList<>();
+		teams = new ArrayList<String>();
 		wins = new int[noOfTeams];
 		losses = new int[noOfTeams];
 		remaining = new int[noOfTeams];
@@ -41,31 +42,54 @@ public class BaseballElimination {
 	}
 
 	public Iterable<String> teams() {
-		return null;
+		return teams;
 	}
 
 	public int wins(String team) {
 		// number of wins for given team
-		return 0;
+		return wins[teams.indexOf(team)];
 	}
 
 	public int losses(String team) {
 		// number of losses for given team
-		return 0;
+		return losses[teams.indexOf(team)];
 	}
 
 	public int remaining(String team) {
 		// number of remaining games for given team
-		return 0;
+		return remaining[teams.indexOf(team)];
 	}
 
 	public int against(String team1, String team2) {
 		// number of remaining games between team1 and team2
-		return 0;
+		return remainingBetweenTesms[teams.indexOf(team1)][teams.indexOf(team2)];
 	}
 
 	public boolean isEliminated(String team) {
 		// is given team eliminated?
+		if(triviallyEliminated(team)) {
+			return true;
+		}
+		
+		FlowNetwork flowNetwork = createFlowNetwork();
+		
+		return false;
+	}
+
+	private FlowNetwork createFlowNetwork() {
+		FlowNetwork flowNetwork = new FlowNetwork(numberOfTeams());
+		//flowNetwork.addEdge(e)
+		return null;
+	}
+
+	private boolean triviallyEliminated(String team) {
+		int x = teams.indexOf(team);
+		int maxWinsPossibleX = wins[x] + remaining[x];
+		for(int i = 0; i < numberOfTeams(); i++) {
+			if (maxWinsPossibleX < (wins[i] + remaining[i])) {
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -78,6 +102,7 @@ public class BaseballElimination {
 		String fileName = args[0];
 		BaseballElimination elimination = new BaseballElimination(fileName);
 		elimination.numberOfTeams();
+		System.out.println("Remaining games between Montreal and Philadelphia: " + elimination.against("Montreal", "Philadelphia"));
 	}
 
 }
