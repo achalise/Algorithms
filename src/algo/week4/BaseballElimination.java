@@ -3,6 +3,7 @@ package algo.week4;
 import java.util.ArrayList;
 import java.util.List;
 
+import algs4.FlowEdge;
 import algs4.FlowNetwork;
 import algs4.In;
 
@@ -71,22 +72,57 @@ public class BaseballElimination {
 			return true;
 		}
 		
-		FlowNetwork flowNetwork = createFlowNetwork();
-		
+		FlowNetwork flowNetwork = createFlowNetwork(team);
+		System.out.println(flowNetwork.toString());
 		return false;
 	}
 
-	private FlowNetwork createFlowNetwork() {
-		FlowNetwork flowNetwork = new FlowNetwork(numberOfTeams());
-		//flowNetwork.addEdge(e)
-		return null;
+	private FlowNetwork createFlowNetwork(String team) {
+		int maxWinX = maxWinForTeam(team);
+		
+		int noOfGames = (numberOfTeams() * (numberOfTeams() - 1))/2;
+		int vertices = noOfGames + teams.size() + 2;
+		FlowNetwork flowNetwork = new FlowNetwork(vertices);
+		int s = 0; // source
+		int t = vertices - 1; //sink
+		
+		int v = 1; // current
+		
+		for (int i = 0; i < numberOfTeams(); i++) {
+			for(int j = i + 1; j < numberOfTeams(); j++) {
+				
+				if (i == j) {
+					continue;
+				}
+				
+				flowNetwork.addEdge(new FlowEdge(s, v, remainingBetweenTesms[i][j]));
+
+				flowNetwork.addEdge(new FlowEdge(v, noOfGames + 1 + i, Integer.MAX_VALUE));
+				flowNetwork.addEdge(new FlowEdge(v, noOfGames + 1 + j, Integer.MAX_VALUE));		
+
+				flowNetwork.addEdge(new FlowEdge((noOfGames + 1 + i), t, maxWinX - wins[i]));
+				flowNetwork.addEdge(new FlowEdge((noOfGames + 1 + j), t, maxWinX - wins[j]));	
+				v++;
+			}
+			
+		}
+		
+
+
+		return flowNetwork;
+	}
+
+	private int maxWinForTeam(String team) {
+		int x = teams.indexOf(team);
+		int maxWinsPossibleX = wins[x] + remaining[x];
+		return maxWinsPossibleX;
 	}
 
 	private boolean triviallyEliminated(String team) {
-		int x = teams.indexOf(team);
-		int maxWinsPossibleX = wins[x] + remaining[x];
+		int maxWinsPossibleX = maxWinForTeam(team);
+		System.out.println("Max wins possible for " + team + " = " + maxWinsPossibleX);
 		for(int i = 0; i < numberOfTeams(); i++) {
-			if (maxWinsPossibleX < (wins[i] + remaining[i])) {
+			if (maxWinsPossibleX <= (wins[i] )) {
 				return true;
 			}
 		}
@@ -102,7 +138,14 @@ public class BaseballElimination {
 		String fileName = args[0];
 		BaseballElimination elimination = new BaseballElimination(fileName);
 		elimination.numberOfTeams();
-		System.out.println("Remaining games between Montreal and Philadelphia: " + elimination.against("Montreal", "Philadelphia"));
+		
+		for(String team: elimination.teams()) {
+			if (elimination.isEliminated(team)) {
+				System.out.println(team + " is eliminated");
+			} else {
+				System.out.println(team + " is not eliminated");
+			}
+		}
 	}
 
 }
